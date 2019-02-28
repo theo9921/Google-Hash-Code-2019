@@ -26,3 +26,9 @@ def initialize():
             picturesH.append(pictureNo)
         else:
             picturesV.append(pictureNo)
+
+    #create new dictionary to hold list of tags
+    pictureTags={}
+    for pictureNo in range(inputData["N"]):
+        pictureTags[str(pictureNo)] = inputData[str(pictureNo)][2:]
+
