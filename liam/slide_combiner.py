@@ -43,6 +43,45 @@ def slide_combiner_2(slide_id_list):
     
     return output
 
+def slide_combiner_3(slide_id_list):
+
+    # a list of slide ids for output
+    output = [0]
+    i = 0
+
+    # Iterate through each slide from i=0 and find the most compatible subsequent slide. 
+    while(len(slide_id_list) > 0):
+        max_score = 0
+        max_score_id = None
+
+        # find compatible slides
+        compatible_slides = find_common_tags(i)
+
+        # remove compatible slides that are already in output
+        compatible_slides = [x for x in compatible_slides not in output]
+        
+        # Iterate through each compatible slide to find the best one
+        for j in range(len(compatible_slides)):
+            
+            #if compatible_slides[j] in output:
+             #   pass
+
+            #else:
+
+            score = interest_factor_func(i, compatible_slides[j])
+
+            # Update max_score_id for the best slide
+            if score > max_score:
+                max_score = score
+                max_score_id = compatible_slides[j]
+                slide_id_list.remove(max_score_id)
+                
+        output.append(max_score_id)
+        i = max_score_id
+
+    return output
+
+
 
 def output_file(output):
 
