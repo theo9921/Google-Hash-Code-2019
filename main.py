@@ -1,46 +1,38 @@
 #MAIN PROGRAM FILE
 import numpy as np
-#create function to read input data
-def initialize():
-    #declare empty dictionary to hold input data
-    inputData = {}
-    #open the input file for reading
-    filename = "C:\\Users\\Theodore\\Documents\\Coding Projects\\Google-Hash-Code-2019\\theo\\a_example.txt"
-    inputFile = open(filename,"r")
-    inputData["N"] = int(inputFile.readline())
 
-    #get input data for each pictures
-    for i in range(inputData["N"]):
-        picData = inputFile.readline().rstrip('\n')
-        picDataList = picData.split(" ")
-        inputData[str(i)]=picDataList
+from itertools import combinations 
+  
+#finds the intersection between two lists
+def intersectscore(i,j):
+    return len(set(i).intersection(j))
 
-    #create empty arrays to hold id's of horizontally and vertically oriented pictures
-    picturesH = []
-    picturesV = []
-    for pictureNo in range(inputData["N"]):
-        if inputData[str(pictureNo)][0] == 'H':
-            picturesH.append(pictureNo)
-        else:
-            picturesV.append(pictureNo)
+def v_combiner(pd,id,combinations_of_pairs):
+    array_of_intersect_score=[]
+    no_of_pic=id["N"]
+    pic_array=a=[i for i in range(no_of_pic)]
+    for i in combinations_of_pairs:
+        array_of_intersect_score.append(intersectscore(pd[str(i[0])],pd[str(i[1])]))
+    return sum(array_of_intersect_score)
 
-    #create new dictionary to hold list of tags
-    pictureTags={}
-    for pictureNo in range(inputData["N"]):
-        pictureTags[str(pictureNo)] = inputData[str(pictureNo)][2:]
+def choose_best_v(arr):
+    combination_array=[]
+    for j in arr:
+        combination_array.append(v_combiner(pd,id,j))
+    return combination_array.index(max(combination_array))
 
 def interest_factor_func(index_1, index_2):
     """ CREATES INTEREST FACTOR FROM THE INDEXES (WHICH MAY BE A TUPLE) OF THE TWO SLIDE CANDIDATES """
     # find tags_1 and tags_2 
     if type(index_1) == int:
-        tags_1 = inputData[index_1][2:]
+        tags_1 = inputData[str(index_1)][2:]
     else:
-        tags_1 = inputData[index_1[0]][2:] + inputData[index_1[1]][2:]
+        tags_1 = inputData[str(index_1[0])][2:] + inputData[str(index_1[1])][2:]
     
     if type(index_2) == int:
-        tags_2 = inputData[index_2][2:]
+        tags_2 = inputData[str(index_2)][2:]
     else:
-        tags_2 = inputData[index_2[0]][2:] + inputData[index_2[1]][2:]
+        tags_2 = inputData[str(index_2[0])][2:] + inputData[str(index_2[1])][2:]
         
         
     interest_factor_1 = set(tags_1 + tags_2)   # Common tags
@@ -56,7 +48,7 @@ def interest_factor_func(index_1, index_2):
         
     return min([len(interest_factor_1), len(interest_factor_2), len(interest_factor_3)])
     
-def find_common_tags(tags_current, INDEXES): # INDEXES represents every available slide that can occur =>> a tuple represents a pair of pictures for a vertical picture
+def find_common_tags(index, INDEXES): # INDEXES represents every available slide that can occur =>> a tuple represents a pair of pictures for a vertical picture
     """ TAKES LIST OF INDEXES OF PHOTOS (INC TUPLES REPRESENTING VERTICAL SLIDES)
     AND THE CURRENT TAGS AND RETURNS A LIST OF INDEXES WHICH HAVE A TAG IN COMMON """
     global inputData
@@ -64,13 +56,17 @@ def find_common_tags(tags_current, INDEXES): # INDEXES represents every availabl
     INDEXES_with_common_tags = []
     # tags_current is a list of the tags of the current slide
     
-    
+    if type(index) == int:
+        tags_current = inputData[str(index)][2:]
+    else:
+        tags_current = inputData[str(index[0])][2:] + inputData[str(index[1])][2:]
+
         
     for tag in tags_current: # for each tag of the current slide
         for index in INDEXES: # and for each index
             if type(index) == int: # if index is int type
                 
-                if tag in inputData[index][2:]: # test if tag in this indexed photo
+                if tag in inputData[str(index)][2:]: # test if tag in this indexed photo
                     
                     INDEXES_with_common_tags.append(index)
                 
@@ -106,15 +102,15 @@ def slide_combiner_3(slide_id_list):
     i = 0
 
     # Iterate through each slide from i=0 and find the most compatible subsequent slide. 
-    while(len(slide_id_list) > 0):
+    while(len(slide_id_list) > 1):
         max_score = 0
         max_score_id = None
 
         # find compatible slides
-        compatible_slides = find_common_tags(i)
+        compatible_slides = find_common_tags(i, slide_id_list)
 
         # remove compatible slides that are already in output
-        compatible_slides = [x for x in compatible_slides not in output]
+        compatible_slides = [x for x in compatible_slides if x not in output]
         
         # Iterate through each compatible slide to find the best one
         for j in range(len(compatible_slides)):
@@ -132,7 +128,11 @@ def slide_combiner_3(slide_id_list):
                 max_score_id = compatible_slides[j]
                
         output.append(max_score_id)
-        slide_id_list.remove(max_score_id) 
+
+        try:
+            slide_id_list.remove(max_score_id) 
+        except:
+            pass
 
         i = max_score_id
 
@@ -153,5 +153,44 @@ def output_file(output):
 
         
         fileout.close()
+
+
+#declare empty dictionary to hold input data
+inputData = {}
+#open the input file for reading
+filename = "C:\\Users\\Theodore\\Documents\\Coding Projects\\Google-Hash-Code-2019\\theo\\a_example.txt"
+inputFile = open(filename,"r")
+inputData["N"] = int(inputFile.readline())
+
+#get input data for each pictures
+for i in range(inputData["N"]):
+    picData = inputFile.readline().rstrip('\n')
+    picDataList = picData.split(" ")
+    inputData[str(i)]=picDataList
+
+#create empty arrays to hold id's of horizontally and vertically oriented pictures
+picturesH = []
+picturesV = []
+for pictureNo in range(inputData["N"]):
+    if inputData[str(pictureNo)][0] == 'H':
+        picturesH.append(pictureNo)
+    else:
+        picturesV.append(pictureNo)
+
+#create new dictionary to hold list of tags
+pictureTags={}
+for pictureNo in range(inputData["N"]):
+    pictureTags[str(pictureNo)] = inputData[str(pictureNo)][2:]
+
+#kisekis function
+# Get all combinations of [1, 2, 3] 
+# and length 2 
+#combinations_of_pairs = list(combinations(pic_array, 2))
+
+
+slider_input_list = picturesH 
+outputIDs = slide_combiner_3(picturesH)
+output_file(outputIDs)
+
 
 
