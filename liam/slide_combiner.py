@@ -47,6 +47,8 @@ def slide_combiner_3(slide_id_list):
 
     # a list of slide ids for output
     output = [0]
+
+    # start with slide 0
     i = 0
 
     # Iterate through each slide from i=0 and find the most compatible subsequent slide. 
@@ -77,7 +79,7 @@ def slide_combiner_3(slide_id_list):
                
         output.append(max_score_id)
         slide_id_list.remove(max_score_id) 
-        
+
         i = max_score_id
 
     return output
