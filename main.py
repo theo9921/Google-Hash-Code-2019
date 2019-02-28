@@ -56,12 +56,6 @@ def interest_factor_func(index_1, index_2):
         
     return min([len(interest_factor_1), len(interest_factor_2), len(interest_factor_3)])
     
-
-
-
-
-
-
 def find_common_tags(tags_current, INDEXES): # INDEXES represents every available slide that can occur =>> a tuple represents a pair of pictures for a vertical picture
     """ TAKES LIST OF INDEXES OF PHOTOS (INC TUPLES REPRESENTING VERTICAL SLIDES)
     AND THE CURRENT TAGS AND RETURNS A LIST OF INDEXES WHICH HAVE A TAG IN COMMON """
@@ -73,72 +67,83 @@ def find_common_tags(tags_current, INDEXES): # INDEXES represents every availabl
     
         
     for tag in tags_current: # for each tag of the current slide
-        
-        for index in INDEXES:
-            
-            if type(index) == int:
+        for index in INDEXES: # and for each index
+            if type(index) == int: # if index is int type
                 
-                if tag in inputData[index]: # assuming tag isn't H, V or a number
+                if tag in inputData[index][2:]: # test if tag in this indexed photo
                     
                     INDEXES_with_common_tags.append(index)
                 
-            else: # assuming tuple then
+            else: # if index is tuple type
                 
-                for sub_index in index:
-                    
-                    if tag in inputData[sub_index]: 
+                for sub_index in index: # for each index in the double-photo slide
+
+                    if tag in inputData[sub_index][2:]: # test if tag in this indexed photo
                     
                         INDEXES_with_common_tags.append(index)
                     
     return INDEXES_with_common_tags
 
-def slide_combiner(slide_id_list):
-
-    output = [0]
-
-    for i in range(len(slide_id_list)):
-        max_score = 0
-        max_score_id = None
-        for j in range(i+1, len(slide_id_list)):
-            score = interest_factor_func(slide_id_list[i], slide_id_list[j])
-
-            if score > max_score:
-                max_score = score
-                max_score_id = slide_id_list[j] # Need to make sure no repeated id.
-
-        output.append(max_score_id)
+def produce_referencable_edge_weights_array():
+    """ FROM inputData IT PRODUCES A LARGE ARRAY OF THE WEIGHTS OF THE EDGES BETWEEN THE POSSIBLE SLIDES IT CAN GO FROM AND TO! """
+    global inputData
     
-    return output
+    N = np.zeros([len(inputData), len(inputData)])
+    
+    for f, index_from in enumerate(inputData):
+        for t, index_to in enumerate(inputData):
+            
+            N[f, t] = interest_factor_func(index_from, index_to)
+            
+    return N
 
-def slide_combiner_2(slide_id_list):
+def slide_combiner_3(slide_id_list):
 
+    # a list of slide ids for output
     output = [0]
 
-    for i in range(len(slide_id_list)):
+    # start with slide 0
+    i = 0
+
+    # Iterate through each slide from i=0 and find the most compatible subsequent slide. 
+    while(len(slide_id_list) > 0):
         max_score = 0
         max_score_id = None
-        compatible_slides = find_common_tags(slide_id_list[i])
-        slide_score_dict = {}
+
+        # find compatible slides
+        compatible_slides = find_common_tags(i)
+
+        # remove compatible slides that are already in output
+        compatible_slides = [x for x in compatible_slides not in output]
+        
+        # Iterate through each compatible slide to find the best one
         for j in range(len(compatible_slides)):
             
-            if compatible_slides[j] in output:
-                pass
+            #if compatible_slides[j] in output:
+             #   pass
 
-            else:
-                score = interest_factor_func(slide_id_list[i], compatible_slides[j])
+            #else:
 
-                if score > max_score:
-                    max_score = score
-                    max_score_id = compatible_slides[j]
-                
+            score = interest_factor_func(i, compatible_slides[j])
+
+            # Update max_score_id for the best slide
+            if score > max_score:
+                max_score = score
+                max_score_id = compatible_slides[j]
+               
         output.append(max_score_id)
-    
-    return output
+        slide_id_list.remove(max_score_id) 
 
+        i = max_score_id
+
+    return output
 
 def output_file(output):
 
     with open("output.txt", 'w') as fileout:
+
+        fileout.write("{}\n".format(len(output)))
+
         for i in output:
             if type(i) == list:
                 fileout.write("{} {}\n".format(i[0], i[1]))
@@ -148,3 +153,5 @@ def output_file(output):
 
         
         fileout.close()
+
+

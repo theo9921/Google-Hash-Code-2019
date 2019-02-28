@@ -1,3 +1,5 @@
+import numpy as np
+
 def interest_factor_func(index_1, index_2):
     """ CREATES INTEREST FACTOR FROM THE INDEXES (WHICH MAY BE A TUPLE) OF THE TWO SLIDE CANDIDATES """
     # find tags_1 and tags_2 
@@ -42,22 +44,36 @@ def find_common_tags(tags_current, INDEXES): # INDEXES represents every availabl
     
         
     for tag in tags_current: # for each tag of the current slide
-        
-        for index in INDEXES:
-            
-            if type(index) == int:
+        for index in INDEXES: # and for each index
+            if type(index) == int: # if index is int type
                 
-                if tag in inputData[index]: # assuming tag isn't H, V or a number
+                if tag in inputData[index][2:]: # test if tag in this indexed photo
                     
                     INDEXES_with_common_tags.append(index)
                 
-            else: # assuming tuple then
+            else: # if index is tuple type
                 
-                for sub_index in index:
-                    
-                    if tag in inputData[sub_index]: 
+                for sub_index in index: # for each index in the double-photo slide
+
+                    if tag in inputData[sub_index][2:]: # test if tag in this indexed photo
                     
                         INDEXES_with_common_tags.append(index)
                     
     return INDEXES_with_common_tags
+
+def produce_referencable_edge_weights_array():
+    """ FROM inputData IT PRODUCES A LARGE ARRAY OF THE WEIGHTS OF THE EDGES BETWEEN THE POSSIBLE SLIDES IT CAN GO FROM AND TO! """
+    global inputData
+    
+    N = np.zeros([len(inputData), len(inputData)])
+    
+    for f, index_from in enumerate(inputData):
+        for t, index_to in enumerate(inputData):
+            
+            N[f, t] = interest_factor_func(index_from, index_to)
+            
+    return N
+
+
+
 
