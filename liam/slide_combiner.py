@@ -74,9 +74,10 @@ def slide_combiner_3(slide_id_list):
             if score > max_score:
                 max_score = score
                 max_score_id = compatible_slides[j]
-                slide_id_list.remove(max_score_id)
-                
+               
         output.append(max_score_id)
+        slide_id_list.remove(max_score_id) 
+        
         i = max_score_id
 
     return output
