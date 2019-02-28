@@ -13,6 +13,20 @@ def interest_factor_func(tags_1, tags_2):
         
     return min([len(interest_factor_1), len(interest_factor_2), len(interest_factor_3)])
     
-tags_1 = [1,2,3,7,4,5,6]
-tags_2 = [2,3,7,8]
-print(interest_factor_func(tags_1, tags_2))
+
+def find_common_tags(tags_current, H):
+    global inputData
+    
+    H_with_common_tags = []
+    # tags_current is a list of the tags of the current slide
+    
+    for index in H:
+        
+        for tag in tags_current:
+            
+            if tag in inputData[index]: # assuming tag isn't H or a number
+                
+                H_with_common_tags.append(index)
+                
+    return H_with_common_tags
+
