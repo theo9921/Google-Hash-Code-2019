@@ -89,6 +89,9 @@ def slide_combiner_3(slide_id_list):
 def output_file(output):
 
     with open("output.txt", 'w') as fileout:
+
+        fileout.write("{}\n".format(len(output)))
+
         for i in output:
             if type(i) == list:
                 fileout.write("{} {}\n".format(i[0], i[1]))
