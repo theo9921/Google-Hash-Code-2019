@@ -1,7 +1,18 @@
-def interest_factor_func(tags_1, tags_2):
-    """ CREATES INTEREST FACTOR FROM THE TAG LISTS OF THE TWO SLIDE CANDIDATES """
-    interest_factor_1 = set(tags_1 + tags_2)   # Common tags
+def interest_factor_func(index_1, index_2):
+    """ CREATES INTEREST FACTOR FROM THE INDEXES (WHICH MAY BE A TUPLE) OF THE TWO SLIDE CANDIDATES """
+    # find tags_1 and tags_2 
+    if type(index_1) == int:
+        tags_1 = inputData[index_1][2:]
+    else:
+        tags_1 = inputData[index_1[0]][2:] + inputData[index_1[1]][2:]
     
+    if type(index_2) == int:
+        tags_2 = inputData[index_2][2:]
+    else:
+        tags_2 = inputData[index_2[0]][2:] + inputData[index_2[1]][2:]
+        
+        
+    interest_factor_1 = set(tags_1 + tags_2)   # Common tags
     intersect = tags_1 + tags_2
     for tag in interest_factor_1:
         intersect.remove(tag)
