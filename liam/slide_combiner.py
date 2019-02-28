@@ -12,8 +12,33 @@ def slide_combiner(slide_id_list):
 
             if score > max_score:
                 max_score = score
-                max_score_id = slide_id_list # Need to make sure no repeated id.
+                max_score_id = slide_id_list[j] # Need to make sure no repeated id.
 
+        output.append(max_score_id)
+    
+    return output
+
+def slide_combiner_2(slide_id_list):
+
+    output = [0]
+
+    for i in range(len(slide_id_list)):
+        max_score = 0
+        max_score_id = None
+        compatible_slides = find_common_tags(slide_id_list[i])
+        slide_score_dict = {}
+        for j in range(len(compatible_slides)):
+            
+            if compatible_slides[j] in output:
+                pass
+
+            else:
+                score = interest_factor_func(slide_id_list[i], compatible_slides[j])
+
+                if score > max_score:
+                    max_score = score
+                    max_score_id = compatible_slides[j]
+                
         output.append(max_score_id)
     
     return output
